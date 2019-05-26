@@ -8,9 +8,10 @@ class Container extends React.Component {
     super(props);
 
     this.state = {
-      searchQuery: '',
+      searchQuery: "",
       results: [],
-      refreshTable: false
+      refreshTable: false,
+      inputError: ""
     }
 
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
@@ -22,74 +23,80 @@ class Container extends React.Component {
   }
 
   onSearch() {
-    // todo: there is an issue in passing result of actual api call to Table component. Need to fix it
-    //this.getData(this.state.searchQuery);
+
+    let searchQuery = this.state.searchQuery;
+
+    if (!searchQuery) {
+      this.setState({inputError: "Please enter search text."});
+      return;
+    } else {
+        this.setState({inputError: ""});
+    }
+    // Actual api call
+    this.getData(this.state.searchQuery);
 
     // Mock api call
+    /*
     setTimeout(() => {
-      let data = this.getDataMock(this.state.searchQuery).groups[0].items;
       let refreshTable = !this.state.refreshTable;
-      this.setState({results: data, refreshTable: refreshTable});
-      //console.log(data);
+      let data = this.getDataMock(this.state.searchQuery);
+      let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
+      this.setState({results: res, refreshTable: refreshTable});
     }, 1000)
+    */
     
   }
 
   getData = address => {
-        
+    // todo: read credentials from environment
     const qs = `?client_id=XIVFA1NRVISYWF34PWGORXLFV4KVDGBXU35254B2GJ3NBQIN&client_secret=31H1Q2PQ10EUWB01F3V1AWAGVGKUAK3WTOWJMUZGQTMU0C3A&query=lunch&near=${address}&v=20170801&limit=3`
     const url = `https://api.foursquare.com/v2/venues/explore${qs}`;
 
     fetch(url)
       .then(results => results.json())
       .then(data => {
-        //console.log(data.response);
         let refreshTable = !this.state.refreshTable;
-        let res = data.response.groups ? data.response.groups[0] : {};
+        let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
         this.setState({results: res, refreshTable: refreshTable});
       });
   };
 
   getDataMock(number){
-      let n = 1;
-      if (!isNaN(number)) { 
-        n = number;
-      }
-      let num = parseInt(n);
-      let response = {};
+      if (isNaN(number)) { return {}; }
+
+      let num = parseInt(number);
+      let data = {response: {}};
       let group = {};
-      
-      group.type = "Recommended Places";
-      group.name = "recommended";
       group.items = [];
-
       for (let i = 1; i < 4; i++){
-      let item = {};
-          item.venue = {
-              name: (i + num).toString(),
-              categories: ["Restaurant " + (i + num).toString()],
-              rating: i * i,
-              url: "http://www.google.com"
-          };
-      group.items[i-1] = item;
+        let item = {};
+            item.venue = {
+                name: "Venue " + (i + num).toString(),
+                categories: [{name: "Restaurant " + (i + num).toString()}],
+                rating: i * i,
+                url: "http://www.google.com"
+            };
+        group.items[i-1] = item;
       }
-      response.groups = [group];
+      data.response.groups = [group];
 
-      return response;
+      return data;
 
     }
 
   render() {
-    const {results, searchQuery, refreshTable} = this.state;
+    const {results, searchQuery, refreshTable, inputError} = this.state;
 
     return (<div>
       <Search
         searchQuery={searchQuery}
         onChange={this.onSearchQueryChange}
         search={this.onSearch}
+        inputError={inputError}
       />
       
       <Table headings={results} refreshTable={refreshTable}/>
+
     </div>);
   }
 }

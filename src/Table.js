@@ -22,8 +22,18 @@ class Table extends React.Component {
         let input = addRow.firstChild.firstChild;
         let voteIndex = this.state.voteIndex;
         let participants = this.state.participants;
-        if (!input.value) { alert("Please enter name."); return; }
-        if (voteIndex === 0) { alert('Please select venue.'); return;}
+        
+        if (!input.value) { 
+            input.className = "Table-input-error";
+        } else {input.className = "Table-input";}
+
+        if (voteIndex === 0) { 
+            for (let i=1; i < addRow.childElementCount; i++){
+                addRow.children[i].className = "Table-cell-error";
+            }
+        }
+
+        if (!input.value || voteIndex === 0) {return; }
         
         participants.push({name: input.value, voteIndex: voteIndex});
 
@@ -31,20 +41,42 @@ class Table extends React.Component {
 
         input.focus();
         input.value = "";
-        for (let i =0; i < addRow.childElementCount; i++){
-            addRow.children[i].className = "Table-cell";
+        for (let i =1; i < addRow.childElementCount; i++){
+            let cell = addRow.children[i];
+            cell.className = "Table-cell";
+            cell.firstChild.className = "Table-hidden";
+        }
+
+        let headerRow = document.getElementById("headerRow");
+        for (let i=1; i < headerRow.childElementCount; i++){
+           headerRow.children[i].children[1].className = "Table-hidden";
+        }
+
+        let v1Votes = participants.filter(o => o.voteIndex === 1).length;
+        let v2Votes = participants.filter(o => o.voteIndex === 2).length;
+        let v3Votes = participants.filter(o => o.voteIndex === 3).length;
+        if (v1Votes > v2Votes && v1Votes > v3Votes) {
+            headerRow.children[1].children[1].className = "Table-visible";
+        } else if (v2Votes > v1Votes && v2Votes > v3Votes) {
+            headerRow.children[2].children[1].className = "Table-visible";
+        } else if (v3Votes > v1Votes && v3Votes > v2Votes) {
+            headerRow.children[3].children[1].className = "Table-visible";
         }
       
     }
 
     handleVote = (idx, evt) => {
         let addRow = document.getElementById("addRow");
-        for (let i =0; i < addRow.childElementCount; i++){
-            addRow.children[i].className = "Table-cell";
+        for (let i=1; i < addRow.childElementCount; i++){
+            let cell = addRow.children[i];
+            cell.className = "Table-cell";
+            cell.firstChild.className = "Table-hidden";
         }
 
-        const target = evt.target;
+        let target = evt.target;
         target.className = "Table-cell-selected";
+        target.firstChild.className = "Table-visible";
+
         this.setState({voteIndex: idx});
        
     }
@@ -53,15 +85,31 @@ class Table extends React.Component {
         const { refreshTable } = this.props;
         if (nextProps.refreshTable !== refreshTable) {
             this.setState({participants: [], voteIndex: 0});
+
+            let headerRow = document.getElementById("headerRow");
+            if (headerRow) {
+                for (let i=1; i < headerRow.childElementCount; i++){
+                    headerRow.children[i].children[1].className = "Table-hidden";
+                }
+            }
+            let addRow = document.getElementById("addRow");
+            if (addRow) {
+                let input = addRow.firstChild.firstChild;
+                input.value = "";
+                input.className = "Table-input";
+                for (let i=1; i < addRow.childElementCount; i++){
+                    let cell = addRow.children[i];
+                    cell.className = "Table-cell";
+                    cell.firstChild.className = "Table-hidden";
+                }
+            }
+
+            let norecordfound = document.getElementById("norecordfound");
+            if (norecordfound) { norecordfound.className =  "Table-visible";}
         }
     }
 
-    componentDidMount(){
-        //console.log(this.props.headings);
-    }
-
     render() {
-    
 
       return (
           <div className="Table">
@@ -69,7 +117,7 @@ class Table extends React.Component {
               <div>
               <table className="Table-table">
                   <thead>
-                    <tr>
+                    <tr id="headerRow">
                         <th className="Table-heading" key="0">
                         <label>Participants</label>
                         </th>
@@ -77,8 +125,13 @@ class Table extends React.Component {
                             return (
                                 <th className="Table-heading" key={idx +1}>
                                     <a href={heading.venue.url} target="_blank" rel="noopener noreferrer">{heading.venue.name}</a>
+                                    <label className="Table-hidden">&#10004;</label>
                                     <br/>
-                                    <label>{heading.venue.categories[0]}</label>
+                                    {heading.venue.categories && heading.venue.categories.length > 0 ?
+                                    <label>{heading.venue.categories[0].name}</label>
+                                    :
+                                    null
+                                    }
                                     <br /> <br/>
                                     <label>{heading.venue.rating}</label>
                                 </th>
@@ -95,13 +148,13 @@ class Table extends React.Component {
                                         <input className="Table-input" type="text" readOnly value={p.name}></input>
                                     </td>
                                     <td className={p.voteIndex !== 1 ? "Table-cell" : "Table-cell-selected"} key="1">
-                                        <label></label>
+                                        <label className={p.voteIndex !== 1? "Table-hidden" : "Table-visible"}>&#10004;</label>
                                     </td>
                                     <td className={p.voteIndex !== 2 ? "Table-cell" : "Table-cell-selected"} key="2">
-                                        <label></label>
+                                    <label className={p.voteIndex !== 2? "Table-hidden" : "Table-visible"}>&#10004;</label>
                                     </td>
                                     <td className={p.voteIndex !== 3 ? "Table-cell" : "Table-cell-selected"} key="3">
-                                        <label></label>
+                                    <label className={p.voteIndex !== 3? "Table-hidden" : "Table-visible"}>&#10004;</label>
                                     </td>
                                 </tr>
                             );
@@ -113,13 +166,13 @@ class Table extends React.Component {
                             <input autoFocus className="Table-input" type="text" placeholder="Type here" onChange={this.handleTextChange} />
                         </td>
                         <td className="Table-cell" key="1" onClick={this.handleVote.bind(this, 1)}>
-                            <label></label>
+                            <label className="Table-hidden">&#10004;</label>
                         </td>
                         <td className="Table-cell" key="2" onClick={this.handleVote.bind(this, 2)}>
-                            <label></label>
+                            <label className="Table-hidden">&#10004;</label>
                         </td>
                         <td className="Table-cell" key="3" onClick={this.handleVote.bind(this, 3)}>
-                            <label></label>
+                            <label className="Table-hidden">&#10004;</label>
                         </td>
                     </tr>
 
@@ -129,7 +182,9 @@ class Table extends React.Component {
               <input type="button" className="Table-button" value="Add Participant" onClick={this.handleAddClick.bind(this)}></input>
               </div>
               :
-              null
+              <div id="norecordfound" className="Table-hidden">
+                  <label>No result found. Please search again...</label>
+              </div>
               }
           </div>
       );

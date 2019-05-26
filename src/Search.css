@@ -13,3 +13,7 @@
     height: 2.5rem;
     margin-left: 2rem;
 }
+
+.Search-input-error{
+    color: red;
+}

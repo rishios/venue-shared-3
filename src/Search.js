@@ -8,7 +8,8 @@ class Search extends React.Component {
         const {
             searchQuery,
             onChange,
-            search
+            search,
+            inputError
           } = this.props;
         
 
@@ -21,6 +22,13 @@ class Search extends React.Component {
           onChange={onChange}
         />
         <button className="Search-button" onClick={search}>Search</button>
+        {inputError ?
+          <div className="Search-input-error">
+              <label>{inputError}</label>
+          </div>
+          :
+          null
+        }
         </div>);
     }
 }
