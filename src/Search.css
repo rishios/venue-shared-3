@@ -1,0 +1,15 @@
+.Search {
+    text-align: left;
+    margin-left: 10rem;
+  }
+
+.Search-box {
+    width: 15rem;
+    height: 2rem;
+}
+
+.Search-button {
+    width: 15em;
+    height: 2.5rem;
+    margin-left: 2rem;
+}
