@@ -118,17 +118,17 @@ class Table extends React.Component {
               <table className="Table-table">
                   <thead>
                     <tr id="headerRow">
-                        <th className="Table-heading" key="0">
-                        <label>Participants</label>
+                        <th className="Table-heading-first" key="0">
+                        <label className="Table-heading-first-label">Participants</label>
                         </th>
                         {this.props.headings.map(function (heading, idx) {
                             return (
                                 <th className="Table-heading" key={idx +1}>
-                                    <a href={heading.venue.url} target="_blank" rel="noopener noreferrer">{heading.venue.name}</a>
+                                    <a className="Table-heading-a" href={heading.venue.url} target="_blank" rel="noopener noreferrer">{heading.venue.name}</a>
                                     <label className="Table-hidden">&#10004;</label>
                                     <br/>
                                     {heading.venue.categories && heading.venue.categories.length > 0 ?
-                                    <label>{heading.venue.categories[0].name}</label>
+                                    <label className="Table-heading-label-category">{heading.venue.categories[0].name}</label>
                                     :
                                     null
                                     }
@@ -143,8 +143,8 @@ class Table extends React.Component {
                     {this.state.participants && this.state.participants.length > 0 &&
                     this.state.participants.map(function (p, idx) {
                             return (
-                                <tr className="Table-row" key={idx}>
-                                    <td className="Table-cell" key="0">
+                                <tr key={idx}>
+                                    <td className="Table-cell-first" key="0">
                                         <input className="Table-input" type="text" readOnly value={p.name}></input>
                                     </td>
                                     <td className={p.voteIndex !== 1 ? "Table-cell" : "Table-cell-selected"} key="1">
@@ -161,8 +161,8 @@ class Table extends React.Component {
                         })
                     }
 
-                    <tr id="addRow" className="Table-row">
-                        <td className="Table-cell" key="0">
+                    <tr id="addRow">
+                        <td className="Table-cell-first" key="0">
                             <input autoFocus className="Table-input" type="text" placeholder="Type here" onChange={this.handleTextChange} />
                         </td>
                         <td className="Table-cell" key="1" onClick={this.handleVote.bind(this, 1)}>

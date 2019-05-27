@@ -1,17 +1,27 @@
 .Search {
     text-align: left;
     margin-left: 10rem;
+    display: flexbox;
   }
 
-.Search-box {
-    width: 15rem;
-    height: 2rem;
+.Search-input {
+    width: 300px;
+    height: 50px;
+    border-radius: 5px;
+    border: 2px solid lightgray;
+    font-size: 18px;
+    color: grey;
 }
 
 .Search-button {
-    width: 15em;
-    height: 2.5rem;
-    margin-left: 2rem;
+    width: 250px;
+    height: 50px;
+    border-radius: 30px;
+    border: 1px solid midnightblue;
+    font-size: 18px;
+    margin-left: 30px;
+    background-color: midnightblue;
+    color: #ffffff;
 }
 
 .Search-input-error{

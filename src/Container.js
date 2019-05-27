@@ -32,18 +32,17 @@ class Container extends React.Component {
     } else {
         this.setState({inputError: ""});
     }
-    // Actual api call
-    this.getData(this.state.searchQuery);
 
-    // Mock api call
-    /*
-    setTimeout(() => {
-      let refreshTable = !this.state.refreshTable;
-      let data = this.getDataMock(this.state.searchQuery);
-      let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
-      this.setState({results: res, refreshTable: refreshTable});
-    }, 1000)
-    */
+    if (isNaN(searchQuery)) { // Actual api call
+        this.getData(this.state.searchQuery);
+    } else { // Mock api call
+      setTimeout(() => {
+        let data = this.getDataMock(this.state.searchQuery);
+        let refreshTable = !this.state.refreshTable;
+        let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
+        this.setState({results: res, refreshTable: refreshTable});
+      }, 1000)
+    }
     
   }
 
@@ -52,13 +51,12 @@ class Container extends React.Component {
     const qs = `?client_id=XIVFA1NRVISYWF34PWGORXLFV4KVDGBXU35254B2GJ3NBQIN&client_secret=31H1Q2PQ10EUWB01F3V1AWAGVGKUAK3WTOWJMUZGQTMU0C3A&query=lunch&near=${address}&v=20170801&limit=3`
     const url = `https://api.foursquare.com/v2/venues/explore${qs}`;
 
-    fetch(url)
-      .then(results => results.json())
-      .then(data => {
-        let refreshTable = !this.state.refreshTable;
-        let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
-        this.setState({results: res, refreshTable: refreshTable});
-      });
+    fetch(url).then(results => results.json())
+              .then(data => {
+                let refreshTable = !this.state.refreshTable;
+                let res = (data.response && data.response.groups) ? data.response.groups[0].items : [];
+                this.setState({results: res, refreshTable: refreshTable});
+              });
   };
 
   getDataMock(number){
@@ -72,7 +70,7 @@ class Container extends React.Component {
         let item = {};
             item.venue = {
                 name: "Venue " + (i + num).toString(),
-                categories: [{name: "Restaurant " + (i + num).toString()}],
+                categories: [{name: "The restaurant " + (i + num).toString()}],
                 rating: i * i,
                 url: "http://www.google.com"
             };

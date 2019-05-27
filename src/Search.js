@@ -15,8 +15,8 @@ class Search extends React.Component {
 
         return (<div className="Search">
         <input autoFocus
-          placeholder="Enter a number for mock testing"
-          className="Search-box"
+          placeholder="Enter number for mock, text for real"
+          className="Search-input"
           type="text"
           value={searchQuery}
           onChange={onChange}
